@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
@@ -10,8 +11,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final wordPair = WordPair.random();
     return MaterialApp(
-      title: 'startup Name Generator',
+      title: 'Startup Name Generator',
       home: RandomWords(),
+      theme: ThemeData(
+        primaryColor: Colors.white
+      ),
     );
   }
 }
@@ -70,11 +74,44 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
+  void _pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          final tiles = _saved.map(
+              (WordPair pair) {
+                return ListTile(
+                  title: Text(
+                    pair.asPascalCase,
+                    style: _biggerFont,
+                  ),
+                );
+              },
+          );
+          final divided = ListTile.divideTiles(
+              context: context,
+              tiles: tiles,
+          ).toList();
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Saved Suggestions'),
+            ),
+            body: ListView(children: divided)
+          );
+        }
+      )
+    );
+  }
+
   Widget build(BuildContext context) {
     final wordPair = WordPair.random();
     return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
+        actions: [
+          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved)
+        ]
       ),
       body: _buildSuggestions(),
     );
